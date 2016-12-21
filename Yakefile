@@ -1,0 +1,32 @@
+# Builds the nightwatch docker image
+build: docker-compose build --pull nightwatch
+
+
+# Starts the app under test, the Selenium hub, and the Selenium *debug* browser nodes
+debug_start:
+  - $STOP_STACK
+  - docker-compose up -d web hub chrome-debug firefox-debug
+
+
+# Useful for debugging failing tests
+debug_test: docker-compose run --rm nightwatch npm run debug
+
+
+# Starts the app under test, the Selenium hub, and the Selenium browser nodes
+start:
+  - $STOP_STACK
+  - docker-compose up -d web hub chrome firefox
+
+
+# kills and removes docker containers
+stop: $STOP_STACK
+
+
+# Starts test runner execution of all tests
+# TODO: add arguments to specify nodes and number of concurrent nodes, e.g. scale firefox=4
+test: docker-compose run --rm nightwatch npm run nightwatch
+
+
+# default values
+_config:
+    STOP_STACK: docker-compose kill && docker-compose rm -vf
